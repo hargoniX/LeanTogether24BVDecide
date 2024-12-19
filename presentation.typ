@@ -211,7 +211,10 @@ example (a b : BitVec 32) :
   caption: [`bv_decide` vs Bitwuzla on LLVM `InstCombine` rewrites in Lean MLIR @leanmlir]
 )
 == HOL Light
-TODO: Build graph from my HOL data: https://gist.github.com/hargoniX/066d343e49b83c847827ffb71c04d67f
+#figure(
+  image("figures/cumul_problems_hollight_hollight_proved.svg"),
+  caption: [`bv_decide` vs HOL Light with CaDiCal #footnote[Data at https://gist.github.com/hargoniX/066d343e49b83c847827ffb71c04d67f]]
+)
 == SMTCoq @SMTCoq
 #[
   #set align(center)
@@ -230,6 +233,17 @@ TODO: Build graph from my HOL data: https://gist.github.com/hargoniX/066d343e49b
     ),
     caption: [`bv_decide` on SMTLib, collected by Abdalrhman Mohamed]
 )
+
+#pagebreak()
+
+Rough data about the timeouts:
+- $approx 4000$ due to kernel typechecking of reflection and preprocessing step
+  - $->$ optimize kernel term
+- $approx 7000$ due to timeout while running rewrite rules with `simp`
+  - $->$ optimize `simp`
+- remaining $approx 4000$ spread across various other stages of the pipeline
+
+= Questions?
 
 = Bibliography
 == Bibliography
