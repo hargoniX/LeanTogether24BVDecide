@@ -72,7 +72,7 @@ bool will_add_overflow_optimized_b(int32_t a, int32_t b) {
 Pipeline inspired by the (unverified) Bitwuzla @bitwuzla SMT solver:
 + Proof by Contradiction
 + Preprocessing
-+ Translate the conjunction of all `BitVec` hypotheses into a boolean circuit
++ Translate the conjunction of all `BitVec` hypotheses into a boolean circuit (bitblasting)
 + Prove that this circuit can never output `true`
   - $->$ the hypotheses cannot hold
   - $->$ contradiction
@@ -268,7 +268,7 @@ Idea:
 - give our circuit to a SAT solver (CaDiCal @cadical)
 - if it returns SAT we recover a counter example
 - if it returns UNSAT we obtain the certificate
-- run a verified certificate checker to validate that the circuit is indeed UNSAT
+- run a verified certificate checker, contributed by Josh Clune
 
 == Convincing Lean
 #sourcecode[
@@ -360,8 +360,8 @@ Rough data about the timeouts:
 
 == Conclusion
 `bv_decide`:
-- can be used for all fixed width `BitVec` problems in Lean
-- performs close to Bitwuzla on ITP-sized problems
+- can be used on all fixed width `BitVec` problems in Lean
+- performs close to Bitwuzla on "ITP-sized" problems
 - produces reasonably good results on SMTLib and we know how to optimize further
 
 = Questions?
