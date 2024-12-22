@@ -172,16 +172,13 @@ Look for embedded constraints:
 ]
 
 #pause
-Now repeat until fixpoint!
-
+Now repeat until fixpoint and collect all hypotheses:
 #[
   #show raw: set text(size: 13pt)
   #sourcecode(
   ```lean
   a k n : BitVec 64
-  h1 : n < (~~~k) = true
-  h3 : (!k == 0#64) = true
-  h2 : (a + k == a) = true
+  h : n < (~~~k) && (!k == 0#64) && (a + k == a) = true
   ⊢ False
   ```)
 ]
@@ -349,7 +346,7 @@ example (a b : BitVec 32) :
         image("figures/cumul_problems_smtlib_sat.svg"),
         image("figures/cumul_problems_smtlib_unsat.svg"),
     ),
-    caption: [`bv_decide` on SMTLib, collected by Abdalrhman Mohamed]
+    caption: [`bv_decide` on SMTLib ($83.1%$ SAT, $59.9%$ UNSAT), collected by Abdalrhman Mohamed]
 )
 
 #pagebreak()
@@ -360,6 +357,12 @@ Rough data about the timeouts:
 - $approx 7000$ due to timeout while running rewrite rules with `simp`
   - $->$ optimize `simp`
 - remaining $approx 4000$ spread across various other stages of the pipeline
+
+== Conclusion
+`bv_decide`:
+- can be used for all fixed width `BitVec` problems in Lean
+- performs close to Bitwuzla on ITP-sized problems
+- produces reasonably good results on SMTLib and we know how to optimize further
 
 = Questions?
 
