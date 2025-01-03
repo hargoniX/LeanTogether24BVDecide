@@ -322,7 +322,7 @@ example (a b : BitVec 32) :
 - Isabelle doesn't have a bitblaster to my knowledge
 == Lean MLIR
 #figure(
-  image("figures/cumul_problems_llvm_instcombine_proved.svg"),
+  image("figures/cumul_problems_llvm_llvm-proved-data.svg"),
   caption: [`bv_decide` vs Bitwuzla on LLVM `InstCombine` rewrites in Lean MLIR @leanmlir]
 )
 == HOL Light
