@@ -372,6 +372,8 @@ Features:
 
 = Questions?
 
+#show: appendix
+
 = Bibliography
 == Bibliography
 #bibliography("references.bib")
