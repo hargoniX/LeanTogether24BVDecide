@@ -361,7 +361,7 @@ Optimizing based on SMTLib:
 
 Features:
 - support `UIntX`, `IntX`
-- support structure of `BitVec, Bool, UIntX, IntX`
+- support structures of `BitVec, Bool, UIntX, IntX`
 - support enumeration types
 
 == Conclusion
