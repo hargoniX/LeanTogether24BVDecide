@@ -30,17 +30,17 @@
 = Motivation
 
 == Motivation
-Do these functions compute the same thing? #footnote[From https://grack.com/blog/2022/12/20/deriving-a-bit-twiddling-hack/]
+Do these functions compute the same thing?
 #sourcecode(
 ```c
-bool will_add_overflow_64bit(int32_t a, int32_t b) {
-    int64_t result = (int64_t)a + (int64_t)b;
-    return result < INT32_MIN || result > INT32_MAX;
+uint32_t naive(uint32_t state) {
+	return state = (uint64_t)state * 48271 % 0x7fffffff;
 }
 
-bool will_add_overflow_optimized_b(int32_t a, int32_t b) {
-    uint32_t c = (uint32_t)a + (uint32_t)b;
-    return ((c ^ a) & (c ^ b)) >> 31;
+uint32_t opt(uint32_t state) {
+	uint64_t product = (uint64_t)state * 48271;
+	uint32_t x = (product & 0x7fffffff) + (product >> 31);
+	return (x & 0x7fffffff) + (x >> 31);
 }
 ```)
 
@@ -50,18 +50,18 @@ bool will_add_overflow_optimized_b(int32_t a, int32_t b) {
   #show raw: set text(size: 13pt)
   #sourcecode(
   ```lean
-  def will_add_overflow_64bit (a b : BitVec 32) : Bool :=
-    let result := (a.signExtend 64) + (b.signExtend 64)
-    let INT32_MAX := 0x7fffffff#32
-    let INT32_MIN := (-0x7fffffff#32 - 1#32)
-    BitVec.slt result (INT32_MIN.signExtend 64) || BitVec.slt (INT32_MAX.signExtend 64) result
+  def naive (state : BitVec 32) : BitVec 32 :=
+    (((state.zeroExtend 64) * 48271) % 0x7fffffff).extractLsb 31 0
 
-  def will_add_overflow_optimized_b (a b : BitVec 32) : Bool :=
-    let c := a + b
-    BitVec.getLsbD (((c ^^^ a) &&& (c ^^^ b)) >>> 31) 0
+  def opt (state : BitVec 32) : BitVec 32 :=
+    let product := (state.zeroExtend 64) * 48271
+    let x := ((product &&& 0x7fffffff) + (product >>> 31)).extractLsb 31 0
+    let x := (x &&& 0x7fffffff) + (x >>> 31)
+    x
 
-  example (a b : BitVec 32) :
-      will_add_overflow_64bit a b = will_add_overflow_optimized_b a b := by
+  theorem opt_correct {state : BitVec 32} (h1 : state > 0) (h2 : state < 0x7fffffff) :
+      naive state = opt state := by
+    unfold naive opt
     sorry -- now what?
   ```
   )
@@ -302,13 +302,16 @@ unsat_of_verifyBVExpr_eq_true (ofReduceBool (verifyBVExpr bv c) true rfl)
 + Obtain UNSAT certificate from SAT solver
 + Use `ofReduceBool` + UNSAT certificate to show the expression is `False`
 #pause
-#sourcecode[
-```lean
-example (a b : BitVec 32) :
-    will_add_overflow_64bit a b = will_add_overflow_optimized_b a b := by
-  unfold will_add_overflow_64bit will_add_overflow_optimized_b
-  bv_decide -- finishes in 0.1s
-```
+#[
+  #show raw: set text(size: 13pt)
+  #sourcecode[
+  ```lean
+  theorem opt_correct {state : BitVec 32} (h1 : state > 0) (h2 : state < 0x7fffffff) :
+      naive state = opt state := by
+    unfold naive opt
+    bv_decide
+  ```
+  ]
 ]
 
 = Performance Evaluation
@@ -349,14 +352,17 @@ example (a b : BitVec 32) :
     caption: [`bv_decide` on SMTLib ($83.1%$ SAT, $59.9%$ UNSAT), collected by Abdalrhman Mohamed]
 )
 
-#pagebreak()
+== Future Work
 
-Rough data about the timeouts:
-- $approx 4000$ due to kernel typechecking of reflection and preprocessing step
-  - $->$ optimize kernel term
-- $approx 7000$ due to timeout while running rewrite rules with `simp`
-  - $->$ optimize `simp`
+Optimizing based on SMTLib:
+- $4,138$ time out while kernel type checks reflection and preprocessing step
+- $7,776$ time out while running rewrite rules with `simp`
 - remaining $approx 4000$ spread across various other stages of the pipeline
+
+Features:
+- support `UIntX`, `IntX`
+- support structure of `BitVec, Bool, UIntX, IntX`
+- support enumeration types
 
 == Conclusion
 `bv_decide`:
