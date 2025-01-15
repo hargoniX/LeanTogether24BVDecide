@@ -349,14 +349,14 @@ unsat_of_verifyBVExpr_eq_true (ofReduceBool (verifyBVExpr bv c) true rfl)
         image("figures/cumul_problems_smtlib_sat.svg"),
         image("figures/cumul_problems_smtlib_unsat.svg"),
     ),
-    caption: [`bv_decide` on SMTLib ($83.1%$ SAT, $59.9%$ UNSAT), collected by Abdalrhman Mohamed]
+    caption: [`bv_decide` on SMTLib ($65%$ solved), collected by Abdalrhman Mohamed]
 )
 
 == Future Work
 
 Optimizing based on SMTLib:
-- $4,138$ time out while kernel type checks reflection and preprocessing step
-- $7,776$ time out while running rewrite rules with `simp`
+- $approx 4,000$ time out while kernel type checks reflection and preprocessing step
+- $approx 7,000$ time out while running rewrite rules with `simp`
 - remaining $approx 4000$ spread across various other stages of the pipeline
 
 Features:
